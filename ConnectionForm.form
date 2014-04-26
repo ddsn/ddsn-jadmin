@@ -46,7 +46,7 @@
           </grid>
         </constraints>
         <properties>
-          <text value="4494"/>
+          <text value="4495"/>
         </properties>
       </component>
       <component id="894f9" class="javax.swing.JButton" binding="connectButton" default-binding="true">

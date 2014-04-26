@@ -24,7 +24,7 @@ public class JAdmin {
 
         jAdminForm = new JAdminForm();
 
-        mainFrame = new JFrame("JAdmin " + version);
+        mainFrame = new JFrame("DDSN JAdmin " + version);
         mainFrame.setContentPane(jAdminForm.getMainPanel());
         mainFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainFrame.pack();
