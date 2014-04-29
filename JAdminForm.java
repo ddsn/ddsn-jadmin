@@ -20,6 +20,7 @@ public class JAdminForm {
     private JButton storeFileButton;
     private JScrollPane logScrollPane;
     private JButton loadFileButton;
+    private JButton connectPeerButton;
     private SimpleDateFormat simpleDateFormat;
 
     public JAdminForm() {
@@ -103,6 +104,20 @@ public class JAdminForm {
                 loadFileDialog.setVisible(true);
             }
         });
+        connectPeerButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                ConnectPeerForm connectPeerForm = new ConnectPeerForm();
+
+                JDialog connectPeerDialog = new JDialog(JAdmin.mainFrame, "Connect Peer", JDialog.ModalityType.APPLICATION_MODAL);
+                connectPeerForm.setWindow(connectPeerDialog);
+                connectPeerDialog.add(connectPeerForm.getMainPanel());
+                connectPeerDialog.pack();
+                connectPeerDialog.setLocationRelativeTo(null);
+                connectPeerDialog.setResizable(false);
+                connectPeerDialog.setVisible(true);
+            }
+        });
     }
 
     public JPanel getMainPanel() {
@@ -127,6 +142,7 @@ public class JAdminForm {
                 sendPingButton.setEnabled(connected);
                 storeFileButton.setEnabled(connected);
                 loadFileButton.setEnabled(connected);
+                connectPeerButton.setEnabled(connected);
             }
         });
     }

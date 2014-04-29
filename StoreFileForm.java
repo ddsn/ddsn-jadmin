@@ -97,17 +97,6 @@ public class StoreFileForm {
                                     JAdmin.send("Chunk-size: " + fileSize);
                                     JAdmin.send("");
 
-                                    JAdmin.socketOutputStream.flush();
-
-                                    // Somehow this Thread.sleep are necessary in order to flush the output stream.
-                                    // Maybe it's an issue on the server side. TODO: investigate
-
-                                    try {
-                                        Thread.sleep(1000);
-                                    } catch (InterruptedException e1) {
-                                        e1.printStackTrace();
-                                    }
-
                                     JAdmin.send(bytes);
 
                                     JAdmin.log("File " + file.getName() + " sent", Color.decode("#008000"));
