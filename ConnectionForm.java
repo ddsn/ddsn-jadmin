@@ -15,6 +15,7 @@ public class ConnectionForm {
     private JTextField portField;
     private JButton connectButton;
     private JPanel mainPanel;
+    private JTextField passwordField;
 
     public ConnectionForm() {
         final ConnectionForm that = this;
@@ -38,9 +39,10 @@ public class ConnectionForm {
 
                             new Thread(new MessageHandler()).start();
 
+                            JAdmin.send("HELLO\n" + passwordField.getText());
+
                             that.window.dispose();
                             JAdmin.getJAdminForm().setConnecting(false);
-                            JAdmin.getJAdminForm().setConnected(true);
                         } catch (NumberFormatException e1) {
                             connectButton.setText("Connect");
                             connectButton.setEnabled(true);

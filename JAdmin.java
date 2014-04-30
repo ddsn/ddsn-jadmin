@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.charset.Charset;
 import java.util.HashMap;
+import java.util.LinkedList;
 
 /**
  * Created by Julian <julian@ddsn.org> on 26.04.2014.
@@ -19,6 +20,7 @@ public class JAdmin {
     public static JFrame mainFrame;
     private static JAdminForm jAdminForm;
     public static HashMap<String, String> filePaths = new HashMap<String, String>();
+    public static HashMap<String, Peer> peers = new HashMap<String, Peer>();
 
     public static void main(String[] args) {
 

@@ -21,10 +21,25 @@ public class JAdminForm {
     private JScrollPane logScrollPane;
     private JButton loadFileButton;
     private JButton connectPeerButton;
+    private JTabbedPane tabbedPane1;
+    private JButton refreshButton;
+    private JLabel integratedLabel;
+    private JLabel codeLabel;
+    private JLabel blocksStoredLabel;
+    private JLabel peersConnectedLabel;
+    private JList outPeers;
+    private JList inPeers;
+    private JList queuedPeers;
+    private JLabel capacityLabel;
+    private JLabel idLabel;
     private SimpleDateFormat simpleDateFormat;
 
     public JAdminForm() {
         simpleDateFormat = new SimpleDateFormat("HH:mm:ss.SSS");
+
+        inPeers.setModel(new DefaultListModel<Peer>());
+        outPeers.setModel(new DefaultListModel<Peer>());
+        queuedPeers.setModel(new DefaultListModel<Peer>());
 
         logList.setModel(new DefaultListModel<LogMessage>());
         logList.setCellRenderer(new ListCellRenderer<LogMessage>() {
@@ -69,7 +84,6 @@ public class JAdminForm {
                     synchronized (JAdmin.socketOutputStream) {
                         JAdmin.send("PING");
                         JAdmin.log("Send ping");
-                        JAdmin.flush();
                     }
                 } catch (IOException e1) {
                     JAdmin.log(e1.getMessage(), Color.RED);
@@ -118,6 +132,16 @@ public class JAdminForm {
                 connectPeerDialog.setVisible(true);
             }
         });
+        refreshButton.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                try {
+                    JAdmin.send("PEER INFO");
+                } catch (IOException e1) {
+                    e1.printStackTrace();
+                }
+            }
+        });
     }
 
     public JPanel getMainPanel() {
@@ -143,6 +167,7 @@ public class JAdminForm {
                 storeFileButton.setEnabled(connected);
                 loadFileButton.setEnabled(connected);
                 connectPeerButton.setEnabled(connected);
+                refreshButton.setEnabled(connected);
             }
         });
     }
@@ -153,10 +178,86 @@ public class JAdminForm {
             public void run() {
                 if (!connecting) {
                     connectButton.setText("Connect");
-                    connectButton.setEnabled(true);
                 } else {
                     connectButton.setText("Connecting...");
                     connectButton.setEnabled(false);
+                }
+            }
+        });
+    }
+
+    public void setPeerInfoId(final String id) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                idLabel.setText(id);
+            }
+        });
+    }
+
+    public void setPeerInfoIntegrated(final boolean integrated) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                integratedLabel.setText(integrated ? "yes" : "no");
+            }
+        });
+    }
+
+    public void setPeerInfoCode(final String code) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                codeLabel.setText(code);
+            }
+        });
+    }
+
+    public void setPeerInfoBlocks(final int blocks) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                blocksStoredLabel.setText(Integer.toString(blocks));
+            }
+        });
+    }
+
+    public void setPeerInfoCapacity(final int capacity) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                capacityLabel.setText(Integer.toString(capacity));
+            }
+        });
+    }
+
+    public void setPeerInfoPeers(final int peers) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                peersConnectedLabel.setText(Integer.toString(peers));
+            }
+        });
+    }
+
+    public void redrawPeers() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                ((DefaultListModel<Peer>)inPeers.getModel()).clear();
+                ((DefaultListModel<Peer>)outPeers.getModel()).clear();
+                ((DefaultListModel<Peer>)queuedPeers.getModel()).clear();
+                for (Peer peer : JAdmin.peers.values()) {
+                    if (peer.inLayer != -1 || peer.outLayer != -1) {
+                        if (peer.inLayer != -1) {
+                            ((DefaultListModel<Peer>)inPeers.getModel()).addElement(peer);
+                        }
+                        if (peer.outLayer != -1) {
+                            ((DefaultListModel<Peer>)outPeers.getModel()).addElement(peer);
+                        }
+                    } else {
+                        ((DefaultListModel<Peer>)queuedPeers.getModel()).addElement(peer);
+                    }
                 }
             }
         });

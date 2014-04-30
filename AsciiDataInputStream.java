@@ -8,6 +8,8 @@ import java.nio.charset.Charset;
  */
 public class AsciiDataInputStream {
 
+    private static final int MAX_STRING_LENGTH = 1024;
+
     private InputStream inputStream;
 
     public AsciiDataInputStream(InputStream inputStream) {
@@ -19,6 +21,9 @@ public class AsciiDataInputStream {
         StringBuilder stringBuilder = new StringBuilder();
         while ((character = inputStream.read()) != (int)'\n') {
             stringBuilder.append((char)character);
+            if (stringBuilder.length() > MAX_STRING_LENGTH) {
+                throw new IOException("String too long");
+            }
         }
         return stringBuilder.toString();
     }
