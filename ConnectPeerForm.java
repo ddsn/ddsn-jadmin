@@ -20,10 +20,13 @@ public class ConnectPeerForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    JAdmin.send("CONNECT PEER");
-                    JAdmin.send("Host: " + hostField.getText());
-                    JAdmin.send("Port: " + portField.getText());
-                    JAdmin.send("");
+                    synchronized (JAdmin.socketOutputStream) {
+                        JAdmin.send("CONNECT PEER");
+                        JAdmin.send("Host: " + hostField.getText());
+                        JAdmin.send("Port: " + portField.getText());
+                        JAdmin.send("");
+                    }
+                    window.dispose();
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }

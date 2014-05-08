@@ -32,6 +32,9 @@ public class JAdminForm {
     private JList queuedPeers;
     private JLabel capacityLabel;
     private JLabel idLabel;
+    private JList filesList;
+    private JList list1;
+    private JButton refreshButton1;
     private SimpleDateFormat simpleDateFormat;
 
     public JAdminForm() {
@@ -136,7 +139,9 @@ public class JAdminForm {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
-                    JAdmin.send("PEER INFO");
+                    synchronized (JAdmin.socketOutputStream) {
+                        JAdmin.send("PEER INFO");
+                    }
                 } catch (IOException e1) {
                     e1.printStackTrace();
                 }

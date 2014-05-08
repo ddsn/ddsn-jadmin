@@ -45,8 +45,8 @@ public class StoreFileForm {
                         fileSizeLabel.setText(String.format("%.2f", fileSize / 1024.0 / 1024.0) + " MB");
                         sendButton.setEnabled(true);
                     } else {
-                        fileSizeLabel.setText(String.format("%.2f", fileSize / 1024.0 / 1024.0) + " MB (too big)");
-                        sendButton.setEnabled(false);
+                        fileSizeLabel.setText(String.format("%.2f", fileSize / 1024.0 / 1024.0) + " MB (" + ((fileSize - 1) / 1024 / 1024 / 8 + 1) + " chunks)");
+                        sendButton.setEnabled(true);
                     }
 
                     window.pack();
@@ -106,6 +106,62 @@ public class StoreFileForm {
                             }
                         }
                     }).start();
+                } else {
+                    RandomAccessFile randomAccessFile = null;
+                    try {
+                        randomAccessFile = new RandomAccessFile(file, "r");
+                    } catch (FileNotFoundException e1) {
+                        return;
+                    }
+
+                    long rest = fileSize;
+                    int i = 0;
+
+                    while (rest > 0) {
+                        final int chunkSize = (int)Math.min(rest, 8 * 1024 * 1024);
+                        rest -= chunkSize;
+
+                        final byte[] bytes = new byte[chunkSize];
+
+                        try {
+                            randomAccessFile.readFully(bytes);
+                        } catch (IOException e1) {
+                            JAdmin.log(e1.getMessage(), Color.RED);
+                            return;
+                        }
+
+                        JAdmin.log("Read " + bytes.length + " bytes");
+
+                        final int j = i++;
+
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    synchronized (JAdmin.socketOutputStream) {
+                                        JAdmin.log("Sending " + bytes.length + " bytes");
+
+                                        JAdmin.send("STORE FILE");
+                                        JAdmin.send("File-name: " + file.getName() + "-" + j);
+                                        JAdmin.send("File-size: " + chunkSize);
+                                        JAdmin.send("Chunks: " + 1);
+                                        JAdmin.send("");
+
+                                        JAdmin.send("Chunk-size: " + chunkSize);
+                                        JAdmin.send("");
+
+                                        JAdmin.send(bytes);
+
+                                        JAdmin.log("File " + file.getName() + "-" + j + " sent", Color.decode("#008000"));
+                                    }
+                                } catch (IOException e1) {
+                                    JAdmin.log(e1.getMessage(), Color.RED);
+                                }
+                            }
+                        }).start();
+                    }
+
+                    JAdmin.log("done", Color.GREEN);
                 }
             }
         });
